@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles, Instagram } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import InstagramEmbed from "@/components/InstagramEmbed";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
+
+const instagramPosts = [
+  "https://www.instagram.com/reel/DXxLfjgPV6W/",
+  "https://www.instagram.com/reel/DWJ2BZ8kXAA/",
+  "https://www.instagram.com/p/DOHWx9ZCSbe/",
+];
 
 const stats = [
   { value: "+300", label: "Familias impactadas", icon: Heart, color: "text-brand-orange", bg: "bg-brand-orange/10" },
@@ -194,6 +201,51 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 text-brand-orange mb-4">
+              <Instagram className="h-4 w-4" />
+              <span className="text-sm font-bold tracking-wide uppercase">@alivefoundationrd</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-heading font-black text-brand-navy mb-4">
+              Nuestro impacto en redes
+            </h2>
+            <p className="text-brand-blue-text text-lg max-w-2xl mx-auto">
+              Historias reales de familias, voluntarios y aliados que viven la inclusión cada día. Síguenos para no perderte ningún momento.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-start">
+            {instagramPosts.map((url, idx) => (
+              <motion.div
+                key={url}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="flex justify-center"
+              >
+                <InstagramEmbed url={url} />
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <a
+              href="https://www.instagram.com/alivefoundationrd/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-navy text-white font-bold hover:bg-brand-navy/90 transition-colors"
+            >
+              <Instagram className="h-5 w-5" />
+              Síguenos en Instagram
+            </a>
           </div>
         </div>
       </section>

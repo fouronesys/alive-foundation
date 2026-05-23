@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Copy, Printer, Heart, Star, Zap, Gift } from "lucide-react";
+import { Copy, Download, Share2, Heart, Star, Zap, Gift, Calendar, MapPin, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -111,8 +111,29 @@ export default function Invitations() {
     }
   };
 
-  const handlePrint = () => {
+  const handleDownload = () => {
     window.print();
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "Invitación · Festival de la Inclusión 2026",
+      text: "Te invitamos a ser parte del Festival de la Inclusión 2026 — Alive Foundation",
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Enlace copiado",
+          description: "El enlace de la invitación se copió al portapapeles.",
+        });
+      }
+    } catch {
+      // user cancelled share
+    }
   };
 
   const currentDate = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: es });
@@ -263,48 +284,62 @@ export default function Invitations() {
           <div className="flex items-center justify-between mb-4 print:hidden">
             <h2 className="text-xl font-heading font-bold text-brand-navy flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-aqua/10 text-brand-aqua text-sm">2</span>
-              Vista Previa de la Carta
+              Vista Previa Digital
             </h2>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
                 <Copy className="h-4 w-4" /> Copiar
               </Button>
-              <Button onClick={handlePrint} size="sm" className="gap-2 bg-brand-navy hover:bg-brand-navy/90 text-white">
-                <Printer className="h-4 w-4" /> Imprimir / PDF
+              <Button variant="outline" size="sm" onClick={handleShare} className="gap-2">
+                <Share2 className="h-4 w-4" /> Compartir
+              </Button>
+              <Button onClick={handleDownload} size="sm" className="gap-2 bg-brand-navy hover:bg-brand-navy/90 text-white">
+                <Download className="h-4 w-4" /> Descargar PDF
               </Button>
             </div>
           </div>
 
-          {/* A4 Paper Container */}
-          <div className="bg-white rounded-md shadow-lg border border-gray-200 w-full max-w-[800px] mx-auto overflow-hidden print:shadow-none print:border-none print:max-w-none print:w-full print:m-0">
-            <div id="letter-content" className="p-8 sm:p-12 md:p-16 font-sans text-brand-navy text-[15px] leading-relaxed">
-              
-              {/* Letterhead */}
-              <div className="border-b-2 border-brand-orange pb-6 mb-8 flex justify-between items-end">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Heart className="h-8 w-8 text-brand-orange fill-current" />
-                    <h1 className="font-heading font-black text-2xl text-brand-navy tracking-tight">Alive Foundation</h1>
+          {/* Digital Invitation Card */}
+          <div className="bg-white rounded-3xl shadow-2xl shadow-brand-navy/10 border border-gray-100 w-full max-w-[760px] mx-auto overflow-hidden print:shadow-none print:border-none print:max-w-none print:w-full print:m-0 print:rounded-none">
+            {/* Colorful gradient header band */}
+            <div className="relative bg-brand-navy px-8 sm:px-12 pt-10 pb-12 overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange rounded-full blur-[100px] opacity-30 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-56 h-56 bg-brand-aqua rounded-full blur-[100px] opacity-25 pointer-events-none" />
+              <div className="relative z-10 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center shrink-0">
+                    <Heart className="h-7 w-7 text-brand-orange fill-current" />
                   </div>
-                  <p className="text-sm font-bold text-brand-aqua">"Haciendo de la inclusión una realidad"</p>
+                  <div>
+                    <h1 className="font-heading font-black text-xl text-white tracking-tight leading-tight">Alive Foundation</h1>
+                    <p className="text-xs font-bold text-brand-aqua uppercase tracking-wider">República Dominicana</p>
+                  </div>
                 </div>
-                <div className="text-right text-xs text-brand-blue-text hidden sm:block">
-                  <p>Santiago, República Dominicana</p>
+                <div className="text-right text-[11px] text-white/70 hidden sm:block">
+                  <p>{currentDate}</p>
                   <p>hola@alivefoundation.org</p>
                 </div>
               </div>
+              <div className="relative z-10 mt-8">
+                <span className="inline-block px-3 py-1 rounded-full bg-brand-orange/20 text-brand-orange text-[11px] font-bold uppercase tracking-wider mb-3">
+                  Invitación oficial
+                </span>
+                <h2 className="font-heading font-black text-3xl sm:text-4xl text-white leading-tight">
+                  Festival de la <span className="text-brand-yellow">Inclusión 2026</span>
+                </h2>
+                <p className="text-brand-aqua font-medium mt-2 italic">"Haciendo de la inclusión una realidad"</p>
+              </div>
+            </div>
 
-              {/* Date & Salutation */}
-              <div className="mb-8">
-                <p className="mb-6">Santiago, República Dominicana<br />{currentDate}</p>
-                
-                <p className="font-bold text-lg mb-1">
-                  {currentValues.companyName ? currentValues.companyName : "Estimados señores,"}
+            <div id="letter-content" className="p-8 sm:p-12 font-sans text-brand-navy text-[15px] leading-relaxed">
+              {/* Salutation */}
+              <div className="mb-6">
+                <p className="font-bold text-xl text-brand-navy">
+                  {currentValues.companyName ? `Hola, ${currentValues.companyName}` : "Hola,"}
                 </p>
                 {currentValues.contactName && (
-                  <p className="mb-4">Atención: {currentValues.contactName}</p>
+                  <p className="text-brand-blue-text mt-1">Atención: {currentValues.contactName}</p>
                 )}
-                {!currentValues.contactName && <p className="mb-4"></p>}
               </div>
 
               {/* Body Content based on type */}
@@ -389,22 +424,41 @@ export default function Invitations() {
               )}
 
               {/* Closing */}
-              <div className="mt-8 space-y-8">
+              <div className="mt-8 space-y-6">
                 {currentValues.sponsorType === "returning" ? (
                   <p className="font-medium">Gracias por seguir creyendo junto a nosotros que todos merecen pertenecer.</p>
                 ) : (
                   <p className="font-medium">Agradecemos de antemano su atención y esperamos poder construir juntos esta experiencia transformadora.</p>
                 )}
 
-                <div>
-                  <p className="mb-1">Con gratitud,</p>
-                  {/* Signature line simulation */}
-                  <div className="w-48 border-b border-brand-navy my-6"></div>
-                  <p className="font-heading font-black text-lg text-brand-navy">Elsy Acosta</p>
-                  <p className="text-brand-blue-text font-bold text-sm">Presidenta, Alive Foundation</p>
+                <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-brand-orange to-brand-yellow flex items-center justify-center text-white font-heading font-black text-lg shrink-0">
+                    EA
+                  </div>
+                  <div>
+                    <p className="text-xs text-brand-blue-text mb-0.5">Con gratitud,</p>
+                    <p className="font-heading font-black text-lg text-brand-navy leading-tight">Elsy Acosta</p>
+                    <p className="text-brand-blue-text text-sm">Presidenta · Alive Foundation</p>
+                  </div>
                 </div>
               </div>
 
+            </div>
+
+            {/* Footer with event quick info */}
+            <div className="bg-gray-50 border-t border-gray-100 px-8 sm:px-12 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center gap-2 text-brand-navy">
+                <Calendar className="h-4 w-4 text-brand-orange shrink-0" />
+                <span className="font-medium">11 de octubre, 2026</span>
+              </div>
+              <div className="flex items-center gap-2 text-brand-navy">
+                <Clock className="h-4 w-4 text-brand-aqua shrink-0" />
+                <span className="font-medium">10:00 a.m. – 2:00 p.m.</span>
+              </div>
+              <div className="flex items-center gap-2 text-brand-navy">
+                <MapPin className="h-4 w-4 text-brand-yellow shrink-0" />
+                <span className="font-medium">Jardín Botánico, Santiago</span>
+              </div>
             </div>
           </div>
         </div>
