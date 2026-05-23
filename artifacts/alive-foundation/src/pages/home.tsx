@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles, Instagram } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles, Instagram, Gift, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InstagramEmbed from "@/components/InstagramEmbed";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
@@ -9,6 +8,65 @@ const instagramPosts = [
   "https://www.instagram.com/reel/DXxLfjgPV6W/",
   "https://www.instagram.com/reel/DWJ2BZ8kXAA/",
   "https://www.instagram.com/p/DOHWx9ZCSbe/",
+];
+
+const plans = [
+  {
+    name: "Patrocinador Comunidad",
+    price: "RD$ 50,000",
+    tagline: "Súmate al movimiento y haz que muchas familias vivan el festival.",
+    highlights: [
+      "Logo en murales de agradecimiento",
+      "Menciones en redes sociales",
+      "5 invitaciones VIP al evento",
+    ],
+    icon: Heart,
+    accent: "bg-brand-yellow",
+    accentText: "text-brand-navy",
+    border: "border-brand-yellow",
+  },
+  {
+    name: "Patrocinador Inclusión",
+    price: "RD$ 150,000",
+    tagline: "Apoya talleres y actividades inclusivas durante el festival.",
+    highlights: [
+      "Logo destacado en tarima y material",
+      "Espacio activo de marca en el festival",
+      "15 invitaciones VIP + reconocimiento",
+    ],
+    icon: Users,
+    accent: "bg-brand-aqua",
+    accentText: "text-white",
+    border: "border-brand-aqua",
+  },
+  {
+    name: "Patrocinador Impacto",
+    price: "RD$ 300,000",
+    tagline: "Lidera el cambio: tu marca al frente de la inclusión en RD.",
+    highlights: [
+      "Marca presentadora del Festival",
+      "Logo en todo el material y prensa",
+      "30 invitaciones VIP + activación principal",
+    ],
+    icon: Sparkles,
+    accent: "bg-brand-orange",
+    accentText: "text-white",
+    border: "border-brand-orange",
+  },
+  {
+    name: "Patrocinador en Especie",
+    price: "Aporte en especie",
+    tagline: "Aporta productos, servicios o logística para el festival.",
+    highlights: [
+      "Logo según valor del aporte",
+      "Menciones y reconocimiento público",
+      "Invitaciones VIP según aporte",
+    ],
+    icon: Gift,
+    accent: "bg-brand-navy",
+    accentText: "text-white",
+    border: "border-brand-navy",
+  },
 ];
 
 const stats = [
@@ -90,12 +148,12 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              <Link href="/invitaciones">
+              <a href="#planes">
                 <Button size="lg" className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-full px-8 py-6 text-lg font-bold shadow-lg shadow-brand-orange/20 h-auto group">
                   Convertirse en Patrocinador
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
-              </Link>
+              </a>
             </motion.div>
           </div>
         </div>
@@ -195,6 +253,68 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Plans Section */}
+      <section id="planes" className="py-24 bg-white scroll-mt-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 text-brand-orange mb-4">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-sm font-bold tracking-wide uppercase">Patrocinios</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-heading font-black text-brand-navy mb-4">
+              Planes de Patrocinio
+            </h2>
+            <p className="text-brand-blue-text text-lg max-w-2xl mx-auto">
+              Elige el nivel que mejor refleje el compromiso de tu marca con la inclusión. Te enviaremos una invitación personalizada para confirmar tu participación.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {plans.map((plan, idx) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className={`flex flex-col rounded-3xl border-2 ${plan.border} bg-white p-6 shadow-sm hover:shadow-xl transition-shadow`}
+                >
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl ${plan.accent} ${plan.accentText} mb-4`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-heading font-black text-brand-navy mb-1">{plan.name}</h3>
+                  <div className="text-2xl font-black text-brand-navy mb-3">{plan.price}</div>
+                  <p className="text-sm text-brand-blue-text mb-5 leading-relaxed">{plan.tagline}</p>
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {plan.highlights.map((h) => (
+                      <li key={h} className="flex items-start gap-2 text-sm text-brand-navy/80">
+                        <Check className="h-4 w-4 text-brand-aqua shrink-0 mt-0.5" />
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-brand-blue-text mb-4">
+              ¿Listo para sumarte? Contáctanos y te enviaremos tu invitación personalizada.
+            </p>
+            <a
+              href="mailto:contacto@alivefoundationrd.org?subject=Quiero%20ser%20patrocinador%20del%20Festival%20de%20la%20Inclusi%C3%B3n%202026"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-orange text-white font-bold hover:bg-brand-orange/90 transition-colors"
+            >
+              Solicitar mi invitación
+              <ArrowRight className="h-5 w-5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Instagram Section */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -254,11 +374,11 @@ export default function Home() {
               Tu apoyo hace posible historias como estas. Sé parte del Festival de la Inclusión 2026 y ayúdanos a seguir transformando realidades.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/invitaciones">
+              <a href="#planes">
                 <Button size="lg" className="w-full sm:w-auto bg-brand-yellow hover:bg-brand-yellow/90 text-brand-navy rounded-full px-8 py-6 text-lg font-bold shadow-xl shadow-brand-yellow/20">
                   Ver Planes de Patrocinio
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
