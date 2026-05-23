@@ -7,9 +7,15 @@ import NotFound from "@/pages/not-found";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import Home from "@/pages/home";
-import Invitations from "@/pages/invitations";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
+import PublicInvitation from "@/pages/public-invitation";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnWindowFocus: false, retry: false },
+  },
+});
 
 function Router() {
   return (
@@ -18,7 +24,9 @@ function Router() {
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/invitaciones" component={Invitations} />
+          <Route path="/admin/login" component={AdminLogin} />
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/invitacion/:token" component={PublicInvitation} />
           <Route component={NotFound} />
         </Switch>
       </main>

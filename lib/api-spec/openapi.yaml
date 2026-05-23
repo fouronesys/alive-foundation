@@ -10,13 +10,16 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: admin
+    description: Admin authentication and management
+  - name: invitations
+    description: Public invitation access
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +27,183 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Authenticate as admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin]
+      summary: End admin session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+
+  /admin/me:
+    get:
+      operationId: adminMe
+      tags: [admin]
+      summary: Get current admin session status
+      responses:
+        "200":
+          description: Status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+
+  /admin/invitations:
+    get:
+      operationId: listInvitations
+      tags: [admin]
+      summary: List all invitations
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invitation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createInvitation
+      tags: [admin]
+      summary: Create a new invitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvitationRequest"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/invitations/{id}:
+    delete:
+      operationId: deleteInvitation
+      tags: [admin]
+      summary: Delete an invitation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /invitations/{token}:
+    get:
+      operationId: getInvitationByToken
+      tags: [invitations]
+      summary: Get public invitation by token
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invitation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicInvitation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /invitations/{token}/confirm:
+    post:
+      operationId: confirmInvitation
+      tags: [invitations]
+      summary: Confirm an invitation with a selected plan
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmInvitationRequest"
+      responses:
+        "200":
+          description: Confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicInvitation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +211,147 @@ components:
       properties:
         status:
           type: string
+      required: [status]
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+    AuthStatus:
+      type: object
+      properties:
+        authenticated:
+          type: boolean
+      required: [authenticated]
+    AdminLoginRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+      required: [password]
+    SponsorType:
+      type: string
+      enum: [new, returning]
+    PlanId:
+      type: string
+      enum: [comunidad, inclusion, impacto, especie]
+    InvitationStatus:
+      type: string
+      enum: [pending, confirmed, declined]
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+        token:
+          type: string
+        recipientCompany:
+          type: string
+        contactName:
+          type: string
+          nullable: true
+        contactEmail:
+          type: string
+          nullable: true
+        sponsorType:
+          $ref: "#/components/schemas/SponsorType"
+        customMessage:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/InvitationStatus"
+        selectedPlan:
+          allOf:
+            - $ref: "#/components/schemas/PlanId"
+          nullable: true
+        inKindType:
+          type: string
+          nullable: true
+        confirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       required:
+        - id
+        - token
+        - recipientCompany
+        - sponsorType
         - status
-
+        - createdAt
+        - updatedAt
+    PublicInvitation:
+      type: object
+      properties:
+        token:
+          type: string
+        recipientCompany:
+          type: string
+        contactName:
+          type: string
+          nullable: true
+        sponsorType:
+          $ref: "#/components/schemas/SponsorType"
+        customMessage:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/InvitationStatus"
+        selectedPlan:
+          allOf:
+            - $ref: "#/components/schemas/PlanId"
+          nullable: true
+        inKindType:
+          type: string
+          nullable: true
+        confirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - token
+        - recipientCompany
+        - sponsorType
+        - status
+    CreateInvitationRequest:
+      type: object
+      properties:
+        recipientCompany:
+          type: string
+          minLength: 1
+        contactName:
+          type: string
+          nullable: true
+        contactEmail:
+          type: string
+          nullable: true
+        sponsorType:
+          $ref: "#/components/schemas/SponsorType"
+        customMessage:
+          type: string
+          nullable: true
+      required:
+        - recipientCompany
+        - sponsorType
+    ConfirmInvitationRequest:
+      type: object
+      properties:
+        plan:
+          $ref: "#/components/schemas/PlanId"
+        inKindType:
+          type: string
+          nullable: true
+      required: [plan]
