@@ -34,16 +34,6 @@ export default function Home() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           <div className="max-w-4xl mx-auto text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-aqua/20 border border-brand-aqua/30 text-brand-aqua mb-8 backdrop-blur-sm"
-            >
-              <Heart className="h-4 w-4 fill-current" />
-              <span className="text-sm font-bold tracking-wide uppercase">Tercera Edición Consecutiva</span>
-            </motion.div>
-            
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
