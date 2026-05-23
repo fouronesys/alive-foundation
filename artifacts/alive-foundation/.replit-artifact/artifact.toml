@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Alive Foundation — Festival de la Inclusión 2026"
+version = "1.0.0"
+id = "artifacts/alive-foundation"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19944
+
+[services.development]
+run = "pnpm --filter @workspace/alive-foundation run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/alive-foundation", "run", "build" ]
+publicDir = "artifacts/alive-foundation/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19944"
+BASE_PATH = "/"

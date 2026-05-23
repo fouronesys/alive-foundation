@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "bge-7LqhuHewU91ViT43X"
+uri = "file://artifacts/alive-foundation/src/assets/gallery-1.png"
+type = "image"
+title = "Happy family at festival"
+
+[[generated]]
+id = "IRmxomHsjwvUaeaqm1vAI"
+uri = "file://artifacts/alive-foundation/src/assets/gallery-2.png"
+type = "image"
+title = "Children playing in park"
+
+[[generated]]
+id = "x6dD4O3cgMbps_IjEjbsv"
+uri = "file://artifacts/alive-foundation/src/assets/gallery-3.png"
+type = "image"
+title = "Community event outdoors"
+
+[[generated]]
+id = "w3F6GBp9A1tH9nSgSbb6N"
+uri = "file://artifacts/alive-foundation/src/assets/gallery-4.png"
+type = "image"
+title = "Child smiling at festival"
