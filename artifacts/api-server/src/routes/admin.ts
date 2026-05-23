@@ -52,6 +52,7 @@ router.post("/admin/logout", (req, res) => {
 });
 
 router.get("/admin/me", (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
   res.json({ authenticated: !!req.session?.isAdmin });
 });
 

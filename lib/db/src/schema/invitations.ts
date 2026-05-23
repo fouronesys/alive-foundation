@@ -1,7 +1,8 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { randomUUID } from "node:crypto";
 
-export const invitationsTable = pgTable("invitations", {
-  id: uuid("id").primaryKey().defaultRandom(),
+export const invitationsTable = sqliteTable("invitations", {
+  id: text("id").primaryKey().$defaultFn(() => randomUUID()),
   token: text("token").notNull().unique(),
   recipientCompany: text("recipient_company").notNull(),
   contactName: text("contact_name"),
@@ -11,9 +12,13 @@ export const invitationsTable = pgTable("invitations", {
   status: text("status").notNull().default("pending"),
   selectedPlan: text("selected_plan"),
   inKindType: text("in_kind_type"),
-  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  confirmedAt: integer("confirmed_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export type Invitation = typeof invitationsTable.$inferSelect;

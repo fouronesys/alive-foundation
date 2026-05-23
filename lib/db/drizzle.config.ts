@@ -1,14 +1,12 @@
 import { defineConfig } from "drizzle-kit";
-import path from "path";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL, ensure the database is provisioned");
-}
+const DEFAULT_DB_PATH = "/home/runner/workspace/data/alive-foundation.db";
+const dbPath = process.env.DATABASE_FILE ?? DEFAULT_DB_PATH;
 
 export default defineConfig({
-  schema: path.join(__dirname, "./src/schema/index.ts"),
-  dialect: "postgresql",
+  schema: "./src/schema/index.ts",
+  dialect: "turso",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: `file:${dbPath}`,
   },
 });

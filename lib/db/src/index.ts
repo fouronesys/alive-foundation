@@ -1,16 +1,16 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import path from "node:path";
+import fs from "node:fs";
+import { createClient, type Client } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-const { Pool } = pg;
+const DEFAULT_DB_PATH = "/home/runner/workspace/data/alive-foundation.db";
+const dbPath = process.env.DATABASE_FILE ?? DEFAULT_DB_PATH;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
-}
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
+export const sqlite: Client = createClient({ url: `file:${dbPath}` });
+
+export const db = drizzle(sqlite, { schema });
 
 export * from "./schema";
