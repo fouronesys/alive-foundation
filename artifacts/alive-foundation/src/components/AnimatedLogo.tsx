@@ -1,15 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.jpg";
 
 interface AnimatedLogoProps {
   size?: number;
   className?: string;
-  /** If false, play the sequence once and call onComplete when the logo is fully revealed. Default: true. */
+  /** If false, play the sequence once. If true, replay every (holdDuration + animation) seconds. Default: true. */
   loop?: boolean;
-  /** Override how long the logo stays visible (in seconds) before exit/loop. */
+  /** Seconds the logo stays visible before the whirlpool plays again. Default: 60 (loop) / 1.4 (one-shot). */
   holdDuration?: number;
-  /** Fired once when the reveal+hold phase finishes (only meaningful when loop=false). */
+  /** Fired once when whirl + reveal finishes and the logo is fully visible. */
   onComplete?: () => void;
 }
 
@@ -37,80 +37,58 @@ const DROP_COUNT = 8;
 
 const WHIRL_DURATION = 2.4; // seconds spinning before logo reveal
 const REVEAL_DURATION = 0.7;
-const DEFAULT_HOLD_DURATION = 60; // default when looping (1 minute)
-const DEFAULT_HOLD_DURATION_ONESHOT = 1.4; // brief hold when used as loading screen
-const EXIT_DURATION = 0.6; // logo fades out
+const REVEAL_TOTAL = WHIRL_DURATION + REVEAL_DURATION; // ≈ 3.1s
+const DEFAULT_HOLD_LOOP = 60; // default hold time in loop mode (1 minute)
+const DEFAULT_HOLD_ONESHOT = 1.4; // default hold time in one-shot mode
 
-export default function AnimatedLogo({
-  size = 130,
-  className = "",
-  loop = true,
-  holdDuration,
-  onComplete,
-}: AnimatedLogoProps) {
-  const orbitRadius = size * 0.7; // initial orbit radius (outside the logo)
+/**
+ * Plays the whirlpool → logo reveal sequence ONCE. Logo stays visible at the
+ * end. `cycleSeconds` is just used to scale framer-motion's normalized `times`
+ * — the keyframes always end with the logo fully visible, no exit frame.
+ */
+function OneShotAnimation({
+  size,
+  cycleSeconds,
+  onRevealComplete,
+}: {
+  size: number;
+  cycleSeconds: number;
+  onRevealComplete?: () => void;
+}) {
+  const orbitRadius = size * 0.7;
   const dropSize = size * 0.18;
 
-  const holdDur =
-    holdDuration ??
-    (loop ? DEFAULT_HOLD_DURATION : DEFAULT_HOLD_DURATION_ONESHOT);
-  const exitDur = loop ? EXIT_DURATION : 0;
-  const LOOP = WHIRL_DURATION + REVEAL_DURATION + holdDur + exitDur;
-  const repeatCount = loop ? Infinity : 0;
+  const tWhirlEnd = WHIRL_DURATION / cycleSeconds;
+  const tRevealEnd = REVEAL_TOTAL / cycleSeconds;
 
-  // Fire onComplete after the reveal + hold phase finishes (before exit)
   useEffect(() => {
-    if (loop || !onComplete) return;
-    const ms = (WHIRL_DURATION + REVEAL_DURATION + holdDur) * 1000;
-    const id = window.setTimeout(onComplete, ms);
+    if (!onRevealComplete) return;
+    const id = window.setTimeout(onRevealComplete, REVEAL_TOTAL * 1000);
     return () => window.clearTimeout(id);
-  }, [loop, holdDur, onComplete]);
-
-  // Key timing breakpoints (normalized 0..1 across LOOP)
-  const tWhirlEnd = WHIRL_DURATION / LOOP;
-  const tRevealEnd = (WHIRL_DURATION + REVEAL_DURATION) / LOOP;
-  const tHoldEnd =
-    (WHIRL_DURATION + REVEAL_DURATION + holdDur) / LOOP;
+  }, [onRevealComplete]);
 
   return (
-    <div
-      className={`relative inline-flex items-center justify-center ${className}`}
-      style={{ width: size * 2.2, height: size * 2.2 }}
-    >
+    <>
       {/* Whirlpool — rotating container holding all drops */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         aria-hidden
         initial={{ rotate: 0, scale: 1.15, opacity: 0 }}
-        animate={
-          loop
-            ? {
-                rotate: [0, -540, -900, -900, -900],
-                scale: [1.15, 0.45, 0, 0, 0],
-                opacity: [0, 1, 0, 0, 0],
-              }
-            : {
-                rotate: [0, -540, -900],
-                scale: [1.15, 0.45, 0],
-                opacity: [0, 1, 0],
-              }
-        }
+        animate={{
+          rotate: [0, -540, -900],
+          scale: [1.15, 0.45, 0],
+          opacity: [0, 1, 0],
+        }}
         transition={{
-          duration: LOOP,
-          times: loop
-            ? [0, tWhirlEnd * 0.7, tWhirlEnd, tHoldEnd, 1]
-            : [0, tWhirlEnd * 0.7, tWhirlEnd],
-          repeat: repeatCount,
-          ease: loop
-            ? ["easeIn", "easeIn", "linear", "linear"]
-            : ["easeIn", "easeIn"],
+          duration: cycleSeconds,
+          times: [0, tWhirlEnd * 0.7, tWhirlEnd],
+          ease: ["easeIn", "easeIn"],
         }}
       >
         {Array.from({ length: DROP_COUNT }).map((_, i) => {
           const angle = (i / DROP_COUNT) * Math.PI * 2;
           const x = Math.cos(angle) * orbitRadius;
           const y = Math.sin(angle) * orbitRadius;
-          // Orient drop so its point faces the center
           const pointAtCenter = (angle * 180) / Math.PI + 90;
           const color = BRAND_COLORS[i % BRAND_COLORS.length];
           return (
@@ -135,63 +113,74 @@ export default function AnimatedLogo({
         className="absolute rounded-full bg-gradient-to-tr from-brand-orange via-brand-yellow to-brand-aqua blur-2xl"
         style={{ width: size * 1.2, height: size * 1.2 }}
         initial={{ opacity: 0, scale: 0.1 }}
-        animate={
-          loop
-            ? {
-                opacity: [0, 0, 0.9, 0.5, 0.5, 0],
-                scale: [0.1, 0.1, 1.2, 1, 1, 0.4],
-              }
-            : {
-                // Flash brightly at whirl→logo transition, then fade away completely
-                opacity: [0, 0, 0.9, 0.3, 0],
-                scale: [0.1, 0.1, 1.2, 1, 0.6],
-              }
-        }
+        animate={{
+          opacity: [0, 0, 0.9, 0.3, 0],
+          scale: [0.1, 0.1, 1.2, 1, 0.6],
+        }}
         transition={{
-          duration: LOOP,
-          times: loop
-            ? [0, tWhirlEnd * 0.95, tWhirlEnd, tRevealEnd, tHoldEnd, 1]
-            : [
-                0,
-                tWhirlEnd * 0.95,
-                tWhirlEnd,
-                tRevealEnd,
-                1,
-              ],
-          repeat: repeatCount,
+          duration: cycleSeconds,
+          times: [0, tWhirlEnd * 0.95, tWhirlEnd, tRevealEnd, 1],
           ease: "easeInOut",
         }}
       />
 
-      {/* The real logo — bursts out from the whirlpool's center */}
+      {/* The real logo — bursts out from the whirlpool's center and stays */}
       <motion.img
         src={logo}
         alt="Alive Foundation"
         className="relative rounded-full object-cover border-4 border-white shadow-2xl"
         style={{ width: size, height: size }}
         initial={{ opacity: 0, scale: 0, rotate: -180 }}
-        animate={
-          loop
-            ? {
-                opacity: [0, 0, 1, 1, 0],
-                scale: [0, 0, 1, 1.03, 0.7],
-                rotate: [-180, -180, 0, 0, 30],
-              }
-            : {
-                // Burst out and stay visible until parent unmounts the loading screen
-                opacity: [0, 0, 1, 1],
-                scale: [0, 0, 1, 1],
-                rotate: [-180, -180, 0, 0],
-              }
-        }
+        animate={{
+          opacity: [0, 0, 1, 1],
+          scale: [0, 0, 1, 1],
+          rotate: [-180, -180, 0, 0],
+        }}
         transition={{
-          duration: LOOP,
-          times: loop
-            ? [0, tWhirlEnd, tRevealEnd, tHoldEnd, 1]
-            : [0, tWhirlEnd, tRevealEnd, 1],
-          repeat: repeatCount,
+          duration: cycleSeconds,
+          times: [0, tWhirlEnd, tRevealEnd, 1],
           ease: [0.34, 1.56, 0.64, 1],
         }}
+      />
+    </>
+  );
+}
+
+export default function AnimatedLogo({
+  size = 130,
+  className = "",
+  loop = true,
+  holdDuration,
+  onComplete,
+}: AnimatedLogoProps) {
+  const holdDur =
+    holdDuration ?? (loop ? DEFAULT_HOLD_LOOP : DEFAULT_HOLD_ONESHOT);
+  // Total time of one cycle: whirl + reveal + visible hold
+  const cycleSeconds = REVEAL_TOTAL + holdDur;
+
+  // When loop=true, force the inner animation to remount every `cycleSeconds`
+  // by incrementing this counter — much more reliable than framer-motion's
+  // repeat:Infinity for very long durations.
+  const [cycle, setCycle] = useState(0);
+  useEffect(() => {
+    if (!loop) return;
+    const id = window.setInterval(
+      () => setCycle((c) => c + 1),
+      cycleSeconds * 1000,
+    );
+    return () => window.clearInterval(id);
+  }, [loop, cycleSeconds]);
+
+  return (
+    <div
+      className={`relative inline-flex items-center justify-center ${className}`}
+      style={{ width: size * 2.2, height: size * 2.2 }}
+    >
+      <OneShotAnimation
+        key={cycle}
+        size={size}
+        cycleSeconds={cycleSeconds}
+        onRevealComplete={onComplete}
       />
     </div>
   );
