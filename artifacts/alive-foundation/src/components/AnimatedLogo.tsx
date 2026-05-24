@@ -1,9 +1,16 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.jpg";
 
 interface AnimatedLogoProps {
   size?: number;
   className?: string;
+  /** If false, play the sequence once and call onComplete when the logo is fully revealed. Default: true. */
+  loop?: boolean;
+  /** Override how long the logo stays visible (in seconds) before exit/loop. */
+  holdDuration?: number;
+  /** Fired once when the reveal+hold phase finishes (only meaningful when loop=false). */
+  onComplete?: () => void;
 }
 
 // "Gota" — teardrop pointing toward the center of the whirlpool
@@ -30,23 +37,40 @@ const DROP_COUNT = 8;
 
 const WHIRL_DURATION = 2.4; // seconds spinning before logo reveal
 const REVEAL_DURATION = 0.7;
-const HOLD_DURATION = 60; // logo visible duration (1 minute)
+const DEFAULT_HOLD_DURATION = 60; // default when looping (1 minute)
+const DEFAULT_HOLD_DURATION_ONESHOT = 1.4; // brief hold when used as loading screen
 const EXIT_DURATION = 0.6; // logo fades out
-const LOOP = WHIRL_DURATION + REVEAL_DURATION + HOLD_DURATION + EXIT_DURATION;
-//        ≈ 2.4 + 0.7 + 5.5 + 0.6 = 9.2s
 
 export default function AnimatedLogo({
   size = 130,
   className = "",
+  loop = true,
+  holdDuration,
+  onComplete,
 }: AnimatedLogoProps) {
   const orbitRadius = size * 0.7; // initial orbit radius (outside the logo)
   const dropSize = size * 0.18;
+
+  const holdDur =
+    holdDuration ??
+    (loop ? DEFAULT_HOLD_DURATION : DEFAULT_HOLD_DURATION_ONESHOT);
+  const exitDur = loop ? EXIT_DURATION : 0;
+  const LOOP = WHIRL_DURATION + REVEAL_DURATION + holdDur + exitDur;
+  const repeatCount = loop ? Infinity : 0;
+
+  // Fire onComplete after the reveal + hold phase finishes (before exit)
+  useEffect(() => {
+    if (loop || !onComplete) return;
+    const ms = (WHIRL_DURATION + REVEAL_DURATION + holdDur) * 1000;
+    const id = window.setTimeout(onComplete, ms);
+    return () => window.clearTimeout(id);
+  }, [loop, holdDur, onComplete]);
 
   // Key timing breakpoints (normalized 0..1 across LOOP)
   const tWhirlEnd = WHIRL_DURATION / LOOP;
   const tRevealEnd = (WHIRL_DURATION + REVEAL_DURATION) / LOOP;
   const tHoldEnd =
-    (WHIRL_DURATION + REVEAL_DURATION + HOLD_DURATION) / LOOP;
+    (WHIRL_DURATION + REVEAL_DURATION + holdDur) / LOOP;
 
   return (
     <div
@@ -75,7 +99,7 @@ export default function AnimatedLogo({
             tHoldEnd,
             1,
           ],
-          repeat: Infinity,
+          repeat: repeatCount,
           ease: ["easeIn", "easeIn", "linear", "linear"],
         }}
       >
@@ -122,7 +146,7 @@ export default function AnimatedLogo({
             tHoldEnd,
             1,
           ],
-          repeat: Infinity,
+          repeat: repeatCount,
           ease: "easeInOut",
         }}
       />
@@ -149,7 +173,7 @@ export default function AnimatedLogo({
             tHoldEnd,
             1,
           ],
-          repeat: Infinity,
+          repeat: repeatCount,
           ease: [0.34, 1.56, 0.64, 1],
         }}
       />

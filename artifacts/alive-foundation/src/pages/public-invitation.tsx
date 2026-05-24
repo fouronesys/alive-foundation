@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AnimatedLogo from "@/components/AnimatedLogo";
 import { useRoute } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -140,6 +141,7 @@ export default function PublicInvitation() {
   const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null);
   const [inKindType, setInKindType] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [introDone, setIntroDone] = useState(false);
 
   const confirmMutation = useConfirmInvitation({
     mutation: {
@@ -163,10 +165,22 @@ export default function PublicInvitation() {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || !introDone) {
     return (
-      <div className="min-h-[calc(100vh-180px)] flex items-center justify-center">
-        <p className="text-muted-foreground">Cargando invitación…</p>
+      <div className="min-h-[calc(100vh-180px)] flex flex-col items-center justify-center gap-6 px-4 bg-gradient-to-b from-brand-navy via-brand-navy to-[#0d1a2e]">
+        <AnimatedLogo
+          size={140}
+          loop={false}
+          onComplete={() => setIntroDone(true)}
+        />
+        <div className="text-center space-y-1">
+          <p className="text-white font-heading text-xl font-semibold tracking-wide">
+            Alive Foundation
+          </p>
+          <p className="text-white/60 text-sm italic">
+            haciendo de la inclusión una realidad
+          </p>
+        </div>
       </div>
     );
   }
