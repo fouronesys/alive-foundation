@@ -1,13 +1,26 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles, Instagram, Gift, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import InstagramEmbed from "@/components/InstagramEmbed";
+import LocalVideoEmbed from "@/components/LocalVideoEmbed";
+import TeamSection from "@/components/TeamSection";
+import AnimatedLogo from "@/components/AnimatedLogo";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
 
-const instagramPosts = [
-  "https://www.instagram.com/reel/DXxLfjgPV6W/",
-  "https://www.instagram.com/reel/DWJ2BZ8kXAA/",
-  "https://www.instagram.com/p/DOHWx9ZCSbe/",
+const BASE = import.meta.env.BASE_URL;
+
+const videoReels = [
+  {
+    src: BASE + "videos/basketball.mp4",
+    caption: "La inclusión se vivió en cada instante. Abrazos sinceros, sonrisas y momentos que se quedan.",
+  },
+  {
+    src: BASE + "videos/dia-sindrome-down.mp4",
+    caption: "En conmemoración del Día Mundial del Síndrome de Down, celebramos a cada persona y familia.",
+  },
+  {
+    src: BASE + "videos/intencion-genuina.mp4",
+    caption: "Cuando la intención es genuina y se le suma conocimiento, el impacto se multiplica.",
+  },
 ];
 
 const plans = [
@@ -104,6 +117,14 @@ export default function Home() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center mb-8"
+            >
+              <AnimatedLogo size={110} />
+            </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -265,6 +286,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Team Section */}
+      <TeamSection />
+
       {/* Plans Section */}
       <section id="planes" className="py-24 bg-white scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -348,17 +372,17 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-start">
-            {instagramPosts.map((url, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-start justify-items-center">
+            {videoReels.map((reel, idx) => (
               <motion.div
-                key={url}
+                key={reel.src}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex justify-center"
+                className="flex justify-center w-full"
               >
-                <InstagramEmbed url={url} />
+                <LocalVideoEmbed src={reel.src} caption={reel.caption} />
               </motion.div>
             ))}
           </div>
