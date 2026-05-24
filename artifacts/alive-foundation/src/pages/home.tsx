@@ -122,7 +122,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl md:text-3xl font-medium text-brand-aqua mb-12 font-heading"
             >
-              "todos pertenecemos"
+              "haciendo de la inclusión una realidad"
             </motion.p>
 
             <motion.div 
