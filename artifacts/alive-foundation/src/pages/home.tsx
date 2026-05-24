@@ -12,55 +12,67 @@ const instagramPosts = [
 
 const plans = [
   {
-    name: "Patrocinador Comunidad",
-    price: "RD$ 50,000",
-    tagline: "Súmate al movimiento y haz que muchas familias vivan el festival.",
+    name: "Plan Comunidad",
+    price: "RD$ 20,000",
+    tagline: "Sumando oportunidades",
     highlights: [
-      "Logo en murales de agradecimiento",
-      "Menciones en redes sociales",
-      "5 invitaciones VIP al evento",
+      "Logo en pantalla de patrocinadores",
+      "Mención en redes sociales",
+      "Logo en brochure digital",
+      "Certificado de patrocinio",
+      "Presencia en agradecimiento oficial",
     ],
     icon: Heart,
-    accent: "bg-brand-yellow",
-    accentText: "text-brand-navy",
-    border: "border-brand-yellow",
-  },
-  {
-    name: "Patrocinador Inclusión",
-    price: "RD$ 150,000",
-    tagline: "Apoya talleres y actividades inclusivas durante el festival.",
-    highlights: [
-      "Logo destacado en tarima y material",
-      "Espacio activo de marca en el festival",
-      "15 invitaciones VIP + reconocimiento",
-    ],
-    icon: Users,
     accent: "bg-brand-aqua",
     accentText: "text-white",
     border: "border-brand-aqua",
   },
   {
-    name: "Patrocinador Impacto",
-    price: "RD$ 300,000",
-    tagline: "Lidera el cambio: tu marca al frente de la inclusión en RD.",
+    name: "Plan Inclusión",
+    price: "RD$ 50,000",
+    tagline: "Haciendo visible el cambio",
+    inheritsFrom: "Plan Comunidad",
     highlights: [
-      "Marca presentadora del Festival",
-      "Logo en todo el material y prensa",
-      "30 invitaciones VIP + activación principal",
+      "Logo en materiales impresos",
+      "Presencia en backdrop oficial",
+      "Espacio para stand promocional",
+      "Mención durante el evento",
+      "Inclusión en campaña digital del festival",
     ],
-    icon: Sparkles,
+    icon: Users,
     accent: "bg-brand-orange",
     accentText: "text-white",
     border: "border-brand-orange",
   },
   {
-    name: "Patrocinador en Especie",
-    price: "Aporte en especie",
-    tagline: "Aporta productos, servicios o logística para el festival.",
+    name: "Plan Impacto",
+    price: "RD$ 100,000",
+    tagline: "Transformando vidas juntos",
+    inheritsFrom: "Plan Inclusión",
     highlights: [
-      "Logo según valor del aporte",
-      "Menciones y reconocimiento público",
-      "Invitaciones VIP según aporte",
+      "Logo destacado como patrocinador principal",
+      "Presencia preferencial en vallas y piezas visuales",
+      "Branding en área estratégica del festival",
+      "Participación destacada en publicaciones",
+      "Entrevistas o menciones especiales",
+      "Inclusión destacada en media/reel recap",
+      "Reconocimiento especial durante apertura",
+    ],
+    icon: Sparkles,
+    accent: "bg-brand-yellow",
+    accentText: "text-brand-navy",
+    border: "border-brand-yellow",
+  },
+  {
+    name: "Aliado en Especie",
+    price: "Aporte en especie",
+    tagline: "Aporta lo que tu marca hace mejor",
+    highlights: [
+      "Agua, alimentos, impresión, sonido",
+      "Mobiliario, transporte, regalos",
+      "Terapias y fotografía",
+      "Reconocimiento público acorde al aporte",
+      "Logo según valor de la contribución",
     ],
     icon: Gift,
     accent: "bg-brand-navy",
@@ -285,8 +297,13 @@ export default function Home() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="text-xl font-heading font-black text-brand-navy mb-1">{plan.name}</h3>
-                  <div className="text-2xl font-black text-brand-navy mb-3">{plan.price}</div>
-                  <p className="text-sm text-brand-blue-text mb-5 leading-relaxed">{plan.tagline}</p>
+                  <div className="text-2xl font-black text-brand-navy mb-2">{plan.price}</div>
+                  <p className="text-sm italic text-brand-blue-text mb-5 leading-relaxed">"{plan.tagline}"</p>
+                  {plan.inheritsFrom && (
+                    <p className="text-xs font-bold uppercase tracking-wide text-brand-orange mb-2">
+                      Todo lo del {plan.inheritsFrom} +
+                    </p>
+                  )}
                   <ul className="space-y-2 mb-6 flex-1">
                     {plan.highlights.map((h) => (
                       <li key={h} className="flex items-start gap-2 text-sm text-brand-navy/80">
