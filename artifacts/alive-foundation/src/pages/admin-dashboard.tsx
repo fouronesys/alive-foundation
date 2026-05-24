@@ -24,14 +24,46 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2, LogOut, Plus, Trash2, Check } from "lucide-react";
+import { Copy, Link2, LogOut, Plus, Trash2, Check, Mail, Calendar, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
+
+const PUBLIC_DOMAIN = "https://alivefoundationrd.com";
 
 const PLAN_LABELS: Record<string, string> = {
-  comunidad: "Patrocinador Comunidad",
-  inclusion: "Patrocinador Inclusión",
-  impacto: "Patrocinador Impacto",
-  especie: "Patrocinador en Especie",
+  comunidad: "Plan Comunidad",
+  inclusion: "Plan Inclusión",
+  impacto: "Plan Impacto",
+  especie: "Aliado en Especie",
 };
+
+const PLAN_VALUES: Record<string, number> = {
+  comunidad: 20000,
+  inclusion: 50000,
+  impacto: 100000,
+  especie: 0,
+};
+
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleString("es-DO", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("es-DO", {
+    style: "currency",
+    currency: "DOP",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 const STATUS_BADGES: Record<
   string,
@@ -44,7 +76,17 @@ const STATUS_BADGES: Record<
 
 function buildInvitationUrl(token: string): string {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  return `${window.location.origin}${base}/invitacion/${token}`;
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const isLocalOrPreview =
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.endsWith(".replit.dev") ||
+    host.endsWith(".replit.app") ||
+    host.endsWith(".repl.co");
+  const origin = isLocalOrPreview && typeof window !== "undefined"
+    ? window.location.origin
+    : PUBLIC_DOMAIN;
+  return `${origin}${base}/invitacion/${token}`;
 }
 
 function CopyLinkButton({ token }: { token: string }) {
@@ -98,16 +140,50 @@ function InvitationRow({ inv }: { inv: Invitation }) {
             </Badge>
           </div>
           {(inv.contactName || inv.contactEmail) && (
-            <p className="text-sm text-muted-foreground">
-              {inv.contactName}
-              {inv.contactName && inv.contactEmail && " · "}
-              {inv.contactEmail}
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
+              {inv.contactName && <span>{inv.contactName}</span>}
+              {inv.contactEmail && (
+                <>
+                  {inv.contactName && <span>·</span>}
+                  <Mail className="h-3 w-3" />
+                  <a
+                    href={`mailto:${inv.contactEmail}`}
+                    className="hover:text-brand-orange underline-offset-2 hover:underline"
+                  >
+                    {inv.contactEmail}
+                  </a>
+                </>
+              )}
             </p>
           )}
-          {inv.selectedPlan && (
-            <p className="text-sm font-semibold text-brand-orange">
-              Plan elegido: {PLAN_LABELS[inv.selectedPlan] ?? inv.selectedPlan}
-              {inv.inKindType && <span className="text-muted-foreground"> · {inv.inKindType}</span>}
+          {inv.status === "confirmed" && inv.selectedPlan && (
+            <div className="rounded-lg bg-green-50 border border-green-200 p-3 mt-2">
+              <p className="text-sm font-bold text-green-900 flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                Aceptó: {PLAN_LABELS[inv.selectedPlan] ?? inv.selectedPlan}
+                {PLAN_VALUES[inv.selectedPlan] > 0 && (
+                  <span className="text-green-700">
+                    · {formatCurrency(PLAN_VALUES[inv.selectedPlan])}
+                  </span>
+                )}
+              </p>
+              {inv.inKindType && (
+                <p className="text-xs text-green-800 mt-1">
+                  Aporte en especie: <strong>{inv.inKindType}</strong>
+                </p>
+              )}
+              {inv.confirmedAt && (
+                <p className="text-xs text-green-700 mt-1 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  Confirmado el {formatDate(inv.confirmedAt)}
+                </p>
+              )}
+            </div>
+          )}
+          {inv.status === "pending" && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              Enviada el {formatDate(inv.createdAt)}
             </p>
           )}
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
@@ -324,6 +400,47 @@ export default function AdminDashboard() {
       </div>
 
       <div className="space-y-8">
+        {invitations && invitations.length > 0 && (() => {
+          const total = invitations.length;
+          const confirmed = invitations.filter((i) => i.status === "confirmed").length;
+          const pending = invitations.filter((i) => i.status === "pending").length;
+          const raised = invitations
+            .filter((i) => i.status === "confirmed" && i.selectedPlan)
+            .reduce((sum, i) => sum + (PLAN_VALUES[i.selectedPlan!] ?? 0), 0);
+          const conversion = total > 0 ? Math.round((confirmed / total) * 100) : 0;
+          return (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="rounded-xl bg-white border border-brand-navy/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground font-bold">Total enviadas</p>
+                <p className="font-heading text-3xl font-black text-brand-navy mt-1">{total}</p>
+              </div>
+              <div className="rounded-xl bg-white border border-yellow-200 p-4">
+                <p className="text-xs uppercase tracking-wide text-yellow-700 font-bold flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> Pendientes
+                </p>
+                <p className="font-heading text-3xl font-black text-yellow-800 mt-1">{pending}</p>
+              </div>
+              <div className="rounded-xl bg-white border border-green-200 p-4">
+                <p className="text-xs uppercase tracking-wide text-green-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" /> Confirmadas
+                </p>
+                <p className="font-heading text-3xl font-black text-green-800 mt-1">
+                  {confirmed} <span className="text-base text-green-600">({conversion}%)</span>
+                </p>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-brand-orange to-brand-yellow text-white p-4">
+                <p className="text-xs uppercase tracking-wide font-bold flex items-center gap-1 opacity-90">
+                  <TrendingUp className="h-3 w-3" /> Recaudado
+                </p>
+                <p className="font-heading text-2xl font-black mt-1">
+                  {formatCurrency(raised)}
+                </p>
+                <p className="text-[10px] opacity-80 mt-0.5">+ aportes en especie</p>
+              </div>
+            </div>
+          );
+        })()}
+
         <CreateInvitationForm />
 
         <div>
