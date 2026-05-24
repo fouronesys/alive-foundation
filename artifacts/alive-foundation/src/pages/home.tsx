@@ -248,44 +248,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-heading font-black text-brand-navy mb-4">
-              Así vivimos el festival 2025
-            </h2>
-            <p className="text-brand-blue-text text-lg max-w-2xl mx-auto">
-              Momentos llenos de alegría, aprendizaje y conexión real entre familias y la comunidad.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { label: "Momentos que se quedan para siempre", icon: Heart, bg: "bg-brand-orange", delay: 0, offset: "" },
-              { label: "Comunidad que nos inspira", icon: Users, bg: "bg-brand-aqua", delay: 0.1, offset: "md:translate-y-8" },
-              { label: "Voluntarios que transforman", icon: HandHeart, bg: "bg-brand-navy", delay: 0.2, offset: "" },
-              { label: "Espacios para todos", icon: Sparkles, bg: "bg-brand-yellow", delay: 0.3, offset: "md:translate-y-8" },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: item.delay }}
-                className={`aspect-[3/4] rounded-3xl overflow-hidden shadow-lg group relative ${item.offset}`}
-              >
-                <div className={`w-full h-full ${item.bg} flex flex-col items-center justify-center p-8 transition-transform duration-700 group-hover:scale-105`}>
-                  <item.icon className="h-16 w-16 text-white/30 fill-current mb-6" />
-                  <p className="text-white font-bold text-center text-lg leading-snug">{item.label}</p>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Team Section */}
       <TeamSection />
 
