@@ -6,173 +6,151 @@ interface AnimatedLogoProps {
   className?: string;
 }
 
-// A teardrop / "gota" SVG path
-function Drop({ color, size = 28 }: { color: string; size?: number }) {
+// "Gota" — teardrop pointing toward the center of the whirlpool
+function Drop({ color, size }: { color: string; size: number }) {
   return (
     <svg
       width={size}
-      height={size * 1.35}
-      viewBox="0 0 40 54"
+      height={size * 1.4}
+      viewBox="0 0 40 56"
       aria-hidden
-      style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.25))" }}
+      style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.3))" }}
     >
       <path
-        d="M20 2 C 6 22, 2 34, 20 52 C 38 34, 34 22, 20 2 Z"
+        d="M20 2 C 6 22, 2 36, 20 54 C 38 36, 34 22, 20 2 Z"
         fill={color}
       />
     </svg>
   );
 }
 
-// Drop config: starts from a random offset/angle outside the logo, spirals into a final position around it
-const DROPS = [
-  {
-    color: "#F5821F", // orange
-    fromX: -180,
-    fromY: -160,
-    fromRot: -540,
-    // Final = arranged in a partial arc above the logo
-    toX: -52,
-    toY: -64,
-    toRot: -30,
-    delay: 0,
-  },
-  {
-    color: "#F5C400", // yellow
-    fromX: 200,
-    fromY: -180,
-    fromRot: 540,
-    toX: 14,
-    toY: -78,
-    toRot: 10,
-    delay: 0.15,
-  },
-  {
-    color: "#00B5CC", // aqua
-    fromX: 220,
-    fromY: 160,
-    fromRot: 720,
-    toX: 60,
-    toY: -32,
-    toRot: 55,
-    delay: 0.3,
-  },
-  {
-    color: "#1A2F4E", // navy
-    fromX: -220,
-    fromY: 180,
-    fromRot: -720,
-    toX: -68,
-    toY: -10,
-    toRot: -65,
-    delay: 0.45,
-  },
-];
+// 8 drops alternating brand colors, evenly spaced around a circle
+const BRAND_COLORS = ["#F5821F", "#F5C400", "#00B5CC", "#1A2F4E"];
+const DROP_COUNT = 8;
 
-const ASSEMBLY_DURATION = 1.4; // s
-const HOLD_BEFORE_LOGO = 0.25;
-const LOGO_REVEAL_DURATION = 0.8;
-const LOOP_INTERVAL = 9; // s — restart the whole animation every 9s
+const WHIRL_DURATION = 2.4; // seconds spinning before logo reveal
+const REVEAL_DURATION = 0.7;
+const HOLD_DURATION = 5.5; // logo visible duration
+const EXIT_DURATION = 0.6; // logo fades out
+const LOOP = WHIRL_DURATION + REVEAL_DURATION + HOLD_DURATION + EXIT_DURATION;
+//        ≈ 2.4 + 0.7 + 5.5 + 0.6 = 9.2s
 
 export default function AnimatedLogo({
   size = 130,
   className = "",
 }: AnimatedLogoProps) {
-  const logoRevealStart =
-    ASSEMBLY_DURATION + HOLD_BEFORE_LOGO; // after drops settle
-  const logoFullyVisible = logoRevealStart + LOGO_REVEAL_DURATION;
-  // Drops fade out as logo reveals
-  const dropFadeOutStart = logoRevealStart + 0.1;
+  const orbitRadius = size * 0.7; // initial orbit radius (outside the logo)
+  const dropSize = size * 0.18;
+
+  // Key timing breakpoints (normalized 0..1 across LOOP)
+  const tWhirlEnd = WHIRL_DURATION / LOOP;
+  const tRevealEnd = (WHIRL_DURATION + REVEAL_DURATION) / LOOP;
+  const tHoldEnd =
+    (WHIRL_DURATION + REVEAL_DURATION + HOLD_DURATION) / LOOP;
 
   return (
     <div
       className={`relative inline-flex items-center justify-center ${className}`}
-      style={{ width: size * 1.8, height: size * 1.8 }}
+      style={{ width: size * 2.2, height: size * 2.2 }}
     >
-      {/* Animated colored drops */}
-      {DROPS.map((d, i) => (
-        <motion.div
-          key={i}
-          className="absolute pointer-events-none"
-          style={{ originX: 0.5, originY: 0.5 }}
-          initial={{
-            x: d.fromX,
-            y: d.fromY,
-            rotate: d.fromRot,
-            opacity: 0,
-            scale: 0.4,
-          }}
-          animate={{
-            x: [d.fromX, d.toX, d.toX, d.fromX * 0.4],
-            y: [d.fromY, d.toY, d.toY, d.fromY * 0.4],
-            rotate: [d.fromRot, d.toRot, d.toRot, d.fromRot * 0.6],
-            opacity: [0, 1, 1, 0],
-            scale: [0.4, 1, 1, 0.6],
-          }}
-          transition={{
-            duration: LOOP_INTERVAL,
-            times: [
-              0,
-              (ASSEMBLY_DURATION + d.delay) / LOOP_INTERVAL,
-              dropFadeOutStart / LOOP_INTERVAL,
-              (dropFadeOutStart + 0.5) / LOOP_INTERVAL,
-            ],
-            repeat: Infinity,
-            ease: ["easeOut", "easeInOut", "easeIn"],
-          }}
-        >
-          <Drop color={d.color} size={size * 0.22} />
-        </motion.div>
-      ))}
-
-      {/* Soft glow that pulses when logo appears */}
+      {/* Whirlpool — rotating container holding all drops */}
       <motion.div
+        className="absolute inset-0 flex items-center justify-center"
         aria-hidden
-        className="absolute rounded-full bg-gradient-to-tr from-brand-orange/60 via-brand-yellow/40 to-brand-aqua/60 blur-2xl"
-        style={{ width: size * 1.1, height: size * 1.1 }}
-        initial={{ opacity: 0, scale: 0.6 }}
+        initial={{ rotate: 0, scale: 1.15, opacity: 0 }}
         animate={{
-          opacity: [0, 0, 0.6, 0.4, 0.6, 0],
-          scale: [0.6, 0.6, 1.1, 1, 1.1, 0.6],
+          // Counter-clockwise: negative rotation, accelerating to 3 full revs
+          rotate: [0, -540, -900, -900, -900],
+          // Whirlpool collapses inward: scale shrinks toward center
+          scale: [1.15, 0.45, 0, 0, 0],
+          // Visible only during the whirl phase
+          opacity: [0, 1, 0, 0, 0],
         }}
         transition={{
-          duration: LOOP_INTERVAL,
+          duration: LOOP,
           times: [
             0,
-            logoRevealStart / LOOP_INTERVAL,
-            logoFullyVisible / LOOP_INTERVAL,
-            (logoFullyVisible + 1.5) / LOOP_INTERVAL,
-            (logoFullyVisible + 3) / LOOP_INTERVAL,
-            (LOOP_INTERVAL - 0.3) / LOOP_INTERVAL,
+            tWhirlEnd * 0.7,
+            tWhirlEnd,
+            tHoldEnd,
+            1,
+          ],
+          repeat: Infinity,
+          ease: ["easeIn", "easeIn", "linear", "linear"],
+        }}
+      >
+        {Array.from({ length: DROP_COUNT }).map((_, i) => {
+          const angle = (i / DROP_COUNT) * Math.PI * 2;
+          const x = Math.cos(angle) * orbitRadius;
+          const y = Math.sin(angle) * orbitRadius;
+          // Orient drop so its point faces the center
+          const pointAtCenter = (angle * 180) / Math.PI + 90;
+          const color = BRAND_COLORS[i % BRAND_COLORS.length];
+          return (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                left: "50%",
+                top: "50%",
+                transform: `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${pointAtCenter}deg)`,
+              }}
+            >
+              <Drop color={color} size={dropSize} />
+            </div>
+          );
+        })}
+      </motion.div>
+
+      {/* Color flash where the whirlpool collapses — bridges whirl → logo reveal */}
+      <motion.div
+        aria-hidden
+        className="absolute rounded-full bg-gradient-to-tr from-brand-orange via-brand-yellow to-brand-aqua blur-2xl"
+        style={{ width: size * 1.2, height: size * 1.2 }}
+        initial={{ opacity: 0, scale: 0.1 }}
+        animate={{
+          opacity: [0, 0, 0.9, 0.5, 0.5, 0],
+          scale: [0.1, 0.1, 1.2, 1, 1, 0.4],
+        }}
+        transition={{
+          duration: LOOP,
+          times: [
+            0,
+            tWhirlEnd * 0.95,
+            tWhirlEnd,
+            tRevealEnd,
+            tHoldEnd,
+            1,
           ],
           repeat: Infinity,
           ease: "easeInOut",
         }}
       />
 
-      {/* The real logo — appears after drops are assembled, holds, then fades for the next loop */}
+      {/* The real logo — bursts out from the whirlpool's center */}
       <motion.img
         src={logo}
         alt="Alive Foundation"
         className="relative rounded-full object-cover border-4 border-white shadow-2xl"
         style={{ width: size, height: size }}
-        initial={{ opacity: 0, scale: 0.4, rotate: -25 }}
+        initial={{ opacity: 0, scale: 0, rotate: -180 }}
         animate={{
           opacity: [0, 0, 1, 1, 0],
-          scale: [0.4, 0.4, 1, 1.04, 0.7],
-          rotate: [-25, -25, 0, 0, 15],
+          scale: [0, 0, 1, 1.03, 0.7],
+          // Logo emerges counter-spinning the last bit of the whirlpool
+          rotate: [-180, -180, 0, 0, 30],
         }}
         transition={{
-          duration: LOOP_INTERVAL,
+          duration: LOOP,
           times: [
             0,
-            logoRevealStart / LOOP_INTERVAL,
-            logoFullyVisible / LOOP_INTERVAL,
-            (LOOP_INTERVAL - 0.8) / LOOP_INTERVAL,
-            (LOOP_INTERVAL - 0.1) / LOOP_INTERVAL,
+            tWhirlEnd,
+            tRevealEnd,
+            tHoldEnd,
+            1,
           ],
           repeat: Infinity,
-          ease: [0.34, 1.56, 0.64, 1], // spring-like overshoot when revealing
+          ease: [0.34, 1.56, 0.64, 1],
         }}
       />
     </div>
