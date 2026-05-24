@@ -45,11 +45,6 @@ export default function Footer() {
                   Inicio
                 </Link>
               </li>
-              <li>
-                <Link href="/invitaciones" className="text-white/80 hover:text-brand-orange transition-colors">
-                  Generador de Invitaciones
-                </Link>
-              </li>
             </ul>
           </div>
           
