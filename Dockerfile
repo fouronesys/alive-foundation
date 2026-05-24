@@ -42,7 +42,8 @@ FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production \
     PORT=80 \
     STATIC_DIR=/app/artifacts/alive-foundation/dist/public \
-    DATABASE_FILE=/app/data/alive-foundation.db
+    DATABASE_FILE=/app/data/alive-foundation.db \
+    MIGRATIONS_DIR=/app/lib/db/drizzle
 
 WORKDIR /app
 
@@ -53,6 +54,9 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Built static frontend
 COPY --from=builder /app/artifacts/alive-foundation/dist/public ./artifacts/alive-foundation/dist/public
+
+# Database migrations (drizzle SQL files) — applied on startup
+COPY --from=builder /app/lib/db/drizzle ./lib/db/drizzle
 
 # Persistent SQLite database lives here. CapRover should mount a volume on /app/data.
 RUN mkdir -p /app/data
