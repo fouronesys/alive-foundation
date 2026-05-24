@@ -82,25 +82,28 @@ export default function AnimatedLogo({
         className="absolute inset-0 flex items-center justify-center"
         aria-hidden
         initial={{ rotate: 0, scale: 1.15, opacity: 0 }}
-        animate={{
-          // Counter-clockwise: negative rotation, accelerating to 3 full revs
-          rotate: [0, -540, -900, -900, -900],
-          // Whirlpool collapses inward: scale shrinks toward center
-          scale: [1.15, 0.45, 0, 0, 0],
-          // Visible only during the whirl phase
-          opacity: [0, 1, 0, 0, 0],
-        }}
+        animate={
+          loop
+            ? {
+                rotate: [0, -540, -900, -900, -900],
+                scale: [1.15, 0.45, 0, 0, 0],
+                opacity: [0, 1, 0, 0, 0],
+              }
+            : {
+                rotate: [0, -540, -900],
+                scale: [1.15, 0.45, 0],
+                opacity: [0, 1, 0],
+              }
+        }
         transition={{
           duration: LOOP,
-          times: [
-            0,
-            tWhirlEnd * 0.7,
-            tWhirlEnd,
-            tHoldEnd,
-            1,
-          ],
+          times: loop
+            ? [0, tWhirlEnd * 0.7, tWhirlEnd, tHoldEnd, 1]
+            : [0, tWhirlEnd * 0.7, tWhirlEnd],
           repeat: repeatCount,
-          ease: ["easeIn", "easeIn", "linear", "linear"],
+          ease: loop
+            ? ["easeIn", "easeIn", "linear", "linear"]
+            : ["easeIn", "easeIn"],
         }}
       >
         {Array.from({ length: DROP_COUNT }).map((_, i) => {
@@ -132,20 +135,29 @@ export default function AnimatedLogo({
         className="absolute rounded-full bg-gradient-to-tr from-brand-orange via-brand-yellow to-brand-aqua blur-2xl"
         style={{ width: size * 1.2, height: size * 1.2 }}
         initial={{ opacity: 0, scale: 0.1 }}
-        animate={{
-          opacity: [0, 0, 0.9, 0.5, 0.5, 0],
-          scale: [0.1, 0.1, 1.2, 1, 1, 0.4],
-        }}
+        animate={
+          loop
+            ? {
+                opacity: [0, 0, 0.9, 0.5, 0.5, 0],
+                scale: [0.1, 0.1, 1.2, 1, 1, 0.4],
+              }
+            : {
+                // Flash brightly at whirl→logo transition, then fade away completely
+                opacity: [0, 0, 0.9, 0.3, 0],
+                scale: [0.1, 0.1, 1.2, 1, 0.6],
+              }
+        }
         transition={{
           duration: LOOP,
-          times: [
-            0,
-            tWhirlEnd * 0.95,
-            tWhirlEnd,
-            tRevealEnd,
-            tHoldEnd,
-            1,
-          ],
+          times: loop
+            ? [0, tWhirlEnd * 0.95, tWhirlEnd, tRevealEnd, tHoldEnd, 1]
+            : [
+                0,
+                tWhirlEnd * 0.95,
+                tWhirlEnd,
+                tRevealEnd,
+                1,
+              ],
           repeat: repeatCount,
           ease: "easeInOut",
         }}
@@ -158,21 +170,25 @@ export default function AnimatedLogo({
         className="relative rounded-full object-cover border-4 border-white shadow-2xl"
         style={{ width: size, height: size }}
         initial={{ opacity: 0, scale: 0, rotate: -180 }}
-        animate={{
-          opacity: [0, 0, 1, 1, 0],
-          scale: [0, 0, 1, 1.03, 0.7],
-          // Logo emerges counter-spinning the last bit of the whirlpool
-          rotate: [-180, -180, 0, 0, 30],
-        }}
+        animate={
+          loop
+            ? {
+                opacity: [0, 0, 1, 1, 0],
+                scale: [0, 0, 1, 1.03, 0.7],
+                rotate: [-180, -180, 0, 0, 30],
+              }
+            : {
+                // Burst out and stay visible until parent unmounts the loading screen
+                opacity: [0, 0, 1, 1],
+                scale: [0, 0, 1, 1],
+                rotate: [-180, -180, 0, 0],
+              }
+        }
         transition={{
           duration: LOOP,
-          times: [
-            0,
-            tWhirlEnd,
-            tRevealEnd,
-            tHoldEnd,
-            1,
-          ],
+          times: loop
+            ? [0, tWhirlEnd, tRevealEnd, tHoldEnd, 1]
+            : [0, tWhirlEnd, tRevealEnd, 1],
           repeat: repeatCount,
           ease: [0.34, 1.56, 0.64, 1],
         }}
