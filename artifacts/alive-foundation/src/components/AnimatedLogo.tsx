@@ -30,7 +30,7 @@ const DROP_COUNT = 8;
 
 const WHIRL_DURATION = 2.4; // seconds spinning before logo reveal
 const REVEAL_DURATION = 0.7;
-const HOLD_DURATION = 5.5; // logo visible duration
+const HOLD_DURATION = 60; // logo visible duration (1 minute)
 const EXIT_DURATION = 0.6; // logo fades out
 const LOOP = WHIRL_DURATION + REVEAL_DURATION + HOLD_DURATION + EXIT_DURATION;
 //        ≈ 2.4 + 0.7 + 5.5 + 0.6 = 9.2s
