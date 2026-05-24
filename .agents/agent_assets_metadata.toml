@@ -24,3 +24,9 @@ id = "w3F6GBp9A1tH9nSgSbb6N"
 uri = "file://artifacts/alive-foundation/src/assets/gallery-4.png"
 type = "image"
 title = "Child smiling at festival"
+
+[[generated]]
+id = "i_SfPsLr-ICFZePXm8hd-"
+uri = "file://artifacts/alive-foundation/public/opengraph.png"
+type = "image"
+title = "generated_image"
