@@ -1,9 +1,10 @@
-# syntax=docker/dockerfile:1.7
 # ---------------------------------------------------------------------------
 # Alive Foundation — single-container deploy (CapRover-ready)
 #   • Builds the Vite frontend (artifacts/alive-foundation) to static files
 #   • Builds the Express API (artifacts/api-server) to a single esbuild bundle
 #   • The Express server serves /api/* + the SPA fallback for everything else
+#
+# Compatible con el builder classic de Docker (CapRover NO usa BuildKit).
 # ---------------------------------------------------------------------------
 
 FROM node:24-bookworm-slim AS builder
@@ -18,8 +19,7 @@ WORKDIR /app
 COPY . .
 
 # Install all workspace deps (frozen lockfile)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build API server (esbuild → artifacts/api-server/dist/index.mjs)
 RUN pnpm --filter @workspace/api-server run build
