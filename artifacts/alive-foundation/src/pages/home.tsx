@@ -308,7 +308,7 @@ export default function Home() {
               ¿Listo para sumarte? Contáctanos y te enviaremos tu invitación personalizada.
             </p>
             <a
-              href="mailto:contacto@alivefoundationrd.org?subject=Quiero%20ser%20patrocinador%20del%20Festival%20de%20la%20Inclusi%C3%B3n%202026"
+              href="mailto:alivefoundationdr@gmail.com?subject=Quiero%20ser%20patrocinador%20del%20Festival%20de%20la%20Inclusi%C3%B3n%202026"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-orange text-white font-bold hover:bg-brand-orange/90 transition-colors"
             >
               Solicitar mi invitación

@@ -26,7 +26,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Copy, Link2, LogOut, Plus, Trash2, Check, Mail, Calendar, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
 
-const PUBLIC_DOMAIN = "https://alivefoundationrd.com";
+const PUBLIC_DOMAIN =
+  typeof window !== "undefined" ? window.location.origin : "";
 
 const PLAN_LABELS: Record<string, string> = {
   comunidad: "Plan Comunidad",

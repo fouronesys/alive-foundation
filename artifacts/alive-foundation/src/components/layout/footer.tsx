@@ -1,4 +1,4 @@
-import { Heart, Mail, Instagram, MapPin } from "lucide-react";
+import { Heart, Mail, Instagram, MapPin, Phone } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Footer() {
@@ -24,7 +24,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-white/80">
               <li className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-brand-orange shrink-0" />
-                <a href="mailto:hola@alivefoundation.org" className="hover:text-brand-orange transition-colors">hola@alivefoundation.org</a>
+                <a href="mailto:alivefoundationdr@gmail.com" className="hover:text-brand-orange transition-colors">alivefoundationdr@gmail.com</a>
+              </li>
+              <li className="flex items-start gap-3">
+                <Phone className="h-5 w-5 text-brand-orange shrink-0" />
+                <a href="tel:+18495398669" className="hover:text-brand-orange transition-colors">+1 (849) 539-8669</a>
               </li>
               <li className="flex items-start gap-3">
                 <Instagram className="h-5 w-5 text-brand-orange shrink-0" />

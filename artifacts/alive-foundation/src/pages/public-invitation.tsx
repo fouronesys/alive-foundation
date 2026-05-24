@@ -23,6 +23,8 @@ import {
   MapPin,
   Star,
   HandHeart,
+  Phone,
+  Mail,
 } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
@@ -536,6 +538,23 @@ export default function PublicInvitation() {
                 <p className="text-xs text-muted-foreground mt-3">
                   Al confirmar, nuestro equipo te contactará para coordinar los próximos pasos.
                 </p>
+                <div className="mt-6 inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-5 text-sm text-brand-navy/80">
+                  <a
+                    href="tel:+18495398669"
+                    className="inline-flex items-center gap-2 hover:text-brand-orange transition-colors"
+                  >
+                    <Phone className="h-4 w-4 text-brand-orange" />
+                    <span className="font-semibold">+1 (849) 539-8669</span>
+                  </a>
+                  <span className="hidden sm:inline text-brand-navy/30">·</span>
+                  <a
+                    href="mailto:alivefoundationdr@gmail.com"
+                    className="inline-flex items-center gap-2 hover:text-brand-orange transition-colors"
+                  >
+                    <Mail className="h-4 w-4 text-brand-orange" />
+                    <span>alivefoundationdr@gmail.com</span>
+                  </a>
+                </div>
               </div>
             </div>
           )}
