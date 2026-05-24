@@ -1,0 +1,45 @@
+# Dependencies (rebuilt inside container)
+node_modules
+**/node_modules
+
+# Build output (rebuilt inside container)
+**/dist
+**/tmp
+**/.tsbuildinfo
+**/out-tsc
+artifacts/alive-foundation/dist
+artifacts/api-server/dist
+lib/*/dist
+.cache
+
+# VCS / editor
+.git
+.gitignore
+.vscode
+.idea
+*.swp
+
+# Replit / agent metadata (not needed in image)
+.replit
+.replitignore
+.local
+.agents
+.upm
+.config
+replit.md
+screenshots
+attached_assets/screenshots
+
+# Local data (DB files, etc.)
+data
+*.db
+*.db-journal
+
+# Logs / OS junk
+*.log
+.DS_Store
+Thumbs.db
+
+# Docs that don't need to ship
+README.md
+DEPLOY.md

@@ -4,7 +4,9 @@ import { createClient, type Client } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-const DEFAULT_DB_PATH = "/home/runner/workspace/data/alive-foundation.db";
+// Relative default so it works both on Replit (CWD = workspace root) and inside
+// the Docker container (CWD = /app, with /app/data mounted as a persistent volume).
+const DEFAULT_DB_PATH = "./data/alive-foundation.db";
 const dbPath = process.env.DATABASE_FILE ?? DEFAULT_DB_PATH;
 
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
