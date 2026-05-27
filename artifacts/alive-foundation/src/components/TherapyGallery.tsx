@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL;
 
-const PHOTOS = Array.from({ length: 17 }, (_, i) => `therapy/therapy-${String(i + 1).padStart(2, "0")}.jpg`);
+const PHOTOS = Array.from({ length: 4 }, (_, i) => `therapy/therapy-${String(i + 1).padStart(2, "0")}.jpg`);
 
 export default function TherapyGallery() {
   return (

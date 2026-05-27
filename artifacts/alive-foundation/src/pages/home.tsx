@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import LocalVideoEmbed from "@/components/LocalVideoEmbed";
 import TeamSection from "@/components/TeamSection";
 import TherapyGallery from "@/components/TherapyGallery";
+import ActivitiesSection from "@/components/ActivitiesSection";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
 
@@ -160,7 +161,7 @@ export default function Home() {
               <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/30" />
               <div className="flex items-center gap-3">
                 <Clock className="h-6 w-6 text-brand-yellow" />
-                <span className="text-lg">9:00 a.m. – 2:00 p.m.</span>
+                <span className="text-lg">9:00 a.m. – 12:00 p.m.</span>
               </div>
             </motion.div>
 
@@ -254,6 +255,9 @@ export default function Home() {
 
       {/* Therapy Gallery */}
       <TherapyGallery />
+
+      {/* Activities Section */}
+      <ActivitiesSection />
 
       {/* Plans Section */}
       <section id="planes" className="py-24 bg-white scroll-mt-24">

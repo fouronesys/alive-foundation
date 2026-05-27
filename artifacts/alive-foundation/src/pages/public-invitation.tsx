@@ -337,7 +337,7 @@ export default function PublicInvitation() {
 
                 <div className="flex items-start gap-3">
                   <Clock className="h-5 w-5 text-brand-yellow shrink-0 mt-0.5" />
-                  <p className="font-bold">9:00 a.m. – 2:00 p.m.</p>
+                  <p className="font-bold">9:00 a.m. – 12:00 p.m.</p>
                 </div>
 
                 <div className="flex items-start gap-3">
