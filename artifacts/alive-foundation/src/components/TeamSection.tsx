@@ -34,9 +34,15 @@ const TEAM: TeamMember[] = [
   },
   {
     name: "Dra. Yamell Camilo",
-    role: "Relaciones Interinstitucionales",
+    role: "Relaciones Interinstitucionales y Voluntariado",
     bio: "Médica y madre sensibilizada con la inclusión. Aporta empatía y formación a familias con miembros con necesidades en su neurodesarrollo.",
     image: "team/yamell-relaciones.jpg",
+  },
+  {
+    name: "Lissette Fermín Genao",
+    role: "Relaciones Públicas y Eventos",
+    bio: "Event Planner y especialista en organización de eventos. Aporta planificación estratégica, comunicación y una visión enfocada en crear experiencias memorables.",
+    image: "team/lissette-relaciones.jpg",
   },
 ];
 
@@ -64,12 +70,12 @@ export default function TeamSection() {
             Conoce el corazón detrás de <span className="text-brand-orange">Alive Foundation</span>
           </h2>
           <p className="text-brand-blue-text text-lg leading-relaxed">
-            Cinco mujeres, cinco historias, un mismo propósito. Madres, profesionales y amigas que comparten un sueño: <strong className="text-brand-navy">servir y transformar vidas</strong>.
+            Seis mujeres, seis historias, un mismo propósito. Madres, profesionales y amigas que comparten un sueño: <strong className="text-brand-navy">servir y transformar vidas</strong>.
           </p>
         </motion.div>
 
         {/* Team grid - hex-inspired offset */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {TEAM.map((member, idx) => (
             <motion.div
               key={member.name}
@@ -111,17 +117,14 @@ export default function TeamSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="mt-16 md:mt-24 max-w-5xl mx-auto"
         >
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white bg-white">
             <img
-              src={BASE + "team/equipo-completo.jpg"}
-              alt="Equipo completo de Alive Foundation"
+              src={BASE + "team/equipo-completo.webp"}
+              alt="El equipo detrás de Alive Foundation"
               loading="lazy"
               className="w-full h-auto"
             />
           </div>
-          <p className="text-center mt-6 font-heading italic text-brand-navy text-lg md:text-xl">
-            "Cuando la pasión por ayudar nos conecta, <span className="text-brand-orange font-bold">no hay límites</span>."
-          </p>
         </motion.div>
       </div>
     </section>

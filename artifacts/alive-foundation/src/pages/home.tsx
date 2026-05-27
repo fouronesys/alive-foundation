@@ -3,6 +3,7 @@ import { ArrowRight, Heart, Users, HandHeart, Calendar, MapPin, Clock, Sparkles,
 import { Button } from "@/components/ui/button";
 import LocalVideoEmbed from "@/components/LocalVideoEmbed";
 import TeamSection from "@/components/TeamSection";
+import TherapyGallery from "@/components/TherapyGallery";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
 
@@ -143,7 +144,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl md:text-3xl font-medium text-brand-aqua mb-12 font-heading"
             >
-              "haciendo de la inclusión una realidad"
+              "Haciendo de la inclusión una realidad"
             </motion.p>
 
             <motion.div 
@@ -159,7 +160,7 @@ export default function Home() {
               <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/30" />
               <div className="flex items-center gap-3">
                 <Clock className="h-6 w-6 text-brand-yellow" />
-                <span className="text-lg">10:00 a.m. – 2:00 p.m.</span>
+                <span className="text-lg">9:00 a.m. – 2:00 p.m.</span>
               </div>
             </motion.div>
 
@@ -250,6 +251,9 @@ export default function Home() {
 
       {/* Team Section */}
       <TeamSection />
+
+      {/* Therapy Gallery */}
+      <TherapyGallery />
 
       {/* Plans Section */}
       <section id="planes" className="py-24 bg-white scroll-mt-24">

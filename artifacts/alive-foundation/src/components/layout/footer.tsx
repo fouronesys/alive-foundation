@@ -32,7 +32,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <Instagram className="h-5 w-5 text-brand-orange shrink-0" />
-                <a href="https://instagram.com/alivefoundationrd" target="_blank" rel="noreferrer" className="hover:text-brand-orange transition-colors">@alive.foundation<br/>@alivefoundationrd</a>
+                <a href="https://instagram.com/alivefoundationrd" target="_blank" rel="noreferrer" className="hover:text-brand-orange transition-colors">@alivefoundationrd</a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-brand-orange shrink-0" />

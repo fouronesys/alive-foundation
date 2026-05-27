@@ -180,7 +180,7 @@ export default function PublicInvitation() {
             Alive Foundation
           </p>
           <p className="text-white/60 text-sm italic">
-            haciendo de la inclusión una realidad
+            Haciendo de la inclusión una realidad
           </p>
         </div>
       </div>
@@ -258,7 +258,7 @@ export default function PublicInvitation() {
 
             {/* Slogan */}
             <p className="font-heading italic text-brand-aqua text-lg sm:text-xl mt-8">
-              "haciendo de la inclusión una realidad"
+              "Haciendo de la inclusión una realidad"
             </p>
           </div>
         </div>
@@ -337,7 +337,7 @@ export default function PublicInvitation() {
 
                 <div className="flex items-start gap-3">
                   <Clock className="h-5 w-5 text-brand-yellow shrink-0 mt-0.5" />
-                  <p className="font-bold">10:00 a.m. – 2:00 p.m.</p>
+                  <p className="font-bold">9:00 a.m. – 2:00 p.m.</p>
                 </div>
 
                 <div className="flex items-start gap-3">
