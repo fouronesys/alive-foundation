@@ -101,6 +101,37 @@ router.post("/admin/invitations", requireAdmin, async (req, res) => {
   res.json(CreateInvitationResponse.parse(serializeInvitation(row)));
 });
 
+router.post("/admin/invitations/:id/send", requireAdmin, async (req, res) => {
+  const id = String(req.params.id);
+  const [row] = await db
+    .select()
+    .from(invitationsTable)
+    .where(eq(invitationsTable.id, id))
+    .limit(1);
+  if (!row) {
+    res.status(404).json({ message: "Invitación no encontrada" });
+    return;
+  }
+  if (!row.contactEmail) {
+    res.status(400).json({ message: "Esta invitación no tiene correo de contacto" });
+    return;
+  }
+  try {
+    await sendInvitationEmail({
+      to: row.contactEmail,
+      contactName: row.contactName,
+      recipientCompany: row.recipientCompany,
+      sponsorType: row.sponsorType,
+      customMessage: row.customMessage,
+      token: row.token,
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    req.log.error({ err, id }, "Resend invitation email failed");
+    res.status(500).json({ message: "No se pudo enviar el correo. Intenta de nuevo." });
+  }
+});
+
 router.delete("/admin/invitations/:id", requireAdmin, async (req, res) => {
   const id = String(req.params.id);
   await db.delete(invitationsTable).where(eq(invitationsTable.id, id));
