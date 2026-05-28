@@ -1,23 +1,13 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { logger } from "./logger";
 
-const SMTP_HOST = "smtp.zoho.com";
-const SMTP_PORT = 587;
-const SMTP_USER = "festival@alivefoundationrd.com";
-
-function createTransport() {
-  const pass = process.env["SMTP_PASS"];
-  if (!pass) {
-    logger.warn("SMTP_PASS is not set — emails will not be sent");
+function getClient(): Resend | null {
+  const key = process.env["RESEND_API_KEY"];
+  if (!key) {
+    logger.warn("RESEND_API_KEY is not set — emails will not be sent");
     return null;
   }
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: false,
-    auth: { user: SMTP_USER, pass },
-    tls: { rejectUnauthorized: true },
-  });
+  return new Resend(key);
 }
 
 function buildInvitationUrl(token: string): string {
@@ -38,8 +28,8 @@ export async function sendInvitationEmail(opts: {
   customMessage: string | null;
   token: string;
 }): Promise<void> {
-  const transport = createTransport();
-  if (!transport) return;
+  const client = getClient();
+  if (!client) return;
 
   const invitationUrl = buildInvitationUrl(opts.token);
   const greeting = opts.contactName ? `Hola, ${opts.contactName}` : `Hola`;
@@ -61,14 +51,12 @@ export async function sendInvitationEmail(opts: {
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-          <!-- Header -->
           <tr>
             <td style="background:#1a2e52;padding:32px 40px;text-align:center;">
               <p style="margin:0;color:#f97316;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Alive Foundation</p>
               <h1 style="margin:8px 0 0;color:#ffffff;font-size:24px;font-weight:900;">Festival de la Inclusión 2026</h1>
             </td>
           </tr>
-          <!-- Body -->
           <tr>
             <td style="padding:40px;">
               <p style="margin:0 0 16px;color:#1a2e52;font-size:18px;font-weight:700;">${greeting},</p>
@@ -80,7 +68,6 @@ export async function sendInvitationEmail(opts: {
               <p style="margin:0 0 32px;color:#374151;">
                 Hemos preparado esta invitación exclusiva para que puedas conocer los planes de patrocinio disponibles y elegir el que mejor se adapte a tu compromiso con la inclusión.
               </p>
-              <!-- CTA Button -->
               <table cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center">
@@ -97,7 +84,6 @@ export async function sendInvitationEmail(opts: {
               </p>
             </td>
           </tr>
-          <!-- Footer -->
           <tr>
             <td style="background:#f3f4f6;padding:24px 40px;border-top:1px solid #e5e7eb;">
               <p style="margin:0;color:#9ca3af;font-size:12px;text-align:center;">
@@ -133,17 +119,18 @@ export async function sendInvitationEmail(opts: {
     .join("\n")
     .trim();
 
-  try {
-    await transport.sendMail({
-      from: `"Alive Foundation" <${SMTP_USER}>`,
-      to: opts.to,
-      subject: `Invitación al Festival de la Inclusión 2026 — ${opts.recipientCompany}`,
-      html,
-      text,
-    });
-    logger.info({ to: opts.to, company: opts.recipientCompany }, "Invitation email sent");
-  } catch (err) {
-    logger.error({ err, to: opts.to }, "Failed to send invitation email");
-    throw err;
+  const { error } = await client.emails.send({
+    from: "Alive Foundation <festival@alivefoundationrd.com>",
+    to: opts.to,
+    subject: `Invitación al Festival de la Inclusión 2026 — ${opts.recipientCompany}`,
+    html,
+    text,
+  });
+
+  if (error) {
+    logger.error({ error, to: opts.to }, "Resend API returned an error");
+    throw new Error(error.message);
   }
+
+  logger.info({ to: opts.to, company: opts.recipientCompany }, "Invitation email sent via Resend");
 }
