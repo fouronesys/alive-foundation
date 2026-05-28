@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2, LogOut, Plus, Trash2, Check, Mail, Calendar, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
+import { Copy, Link2, LogOut, Plus, Trash2, Check, Mail, Calendar, TrendingUp, Clock, CheckCircle2, Send } from "lucide-react";
 
 const PUBLIC_DOMAIN =
   typeof window !== "undefined" ? window.location.origin : "";
@@ -111,6 +111,63 @@ function CopyLinkButton({ token }: { token: string }) {
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? "¡Copiado!" : "Copiar enlace"}
     </Button>
+  );
+}
+
+function ResendButton({ inv }: { inv: Invitation }) {
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  if (!inv.contactEmail) return null;
+
+  async function handleResend() {
+    setState("sending");
+    setErrorMsg(null);
+    try {
+      const res = await fetch(`/api/admin/invitations/${inv.id}/send`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { message?: string }).message ?? "Error al enviar");
+      }
+      setState("sent");
+      setTimeout(() => setState("idle"), 3000);
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Error al enviar");
+      setState("error");
+      setTimeout(() => setState("idle"), 4000);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={state === "sending" || state === "sent"}
+        onClick={handleResend}
+        className={
+          state === "sent"
+            ? "gap-2 text-green-600 border-green-300 hover:text-green-600"
+            : state === "error"
+              ? "gap-2 text-red-600 border-red-300 hover:text-red-600"
+              : "gap-2"
+        }
+      >
+        {state === "sent" ? (
+          <><Check className="h-3.5 w-3.5" /> ¡Enviado!</>
+        ) : state === "sending" ? (
+          <><Send className="h-3.5 w-3.5 animate-pulse" /> Enviando…</>
+        ) : (
+          <><Send className="h-3.5 w-3.5" /> Reenviar</>
+        )}
+      </Button>
+      {state === "error" && errorMsg && (
+        <p className="text-xs text-red-600">{errorMsg}</p>
+      )}
+    </div>
   );
 }
 
@@ -203,6 +260,7 @@ function InvitationRow({ inv }: { inv: Invitation }) {
           >
             Ver
           </Button>
+          <ResendButton inv={inv} />
           <Button
             size="sm"
             variant="outline"
