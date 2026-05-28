@@ -10,6 +10,7 @@ import {
   DeleteInvitationResponse,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../lib/session";
+import { sendInvitationEmail } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -82,6 +83,21 @@ router.post("/admin/invitations", requireAdmin, async (req, res) => {
       customMessage: data.customMessage ?? null,
     })
     .returning();
+
+  // Send invitation email if a contact email was provided
+  if (row.contactEmail) {
+    sendInvitationEmail({
+      to: row.contactEmail,
+      contactName: row.contactName,
+      recipientCompany: row.recipientCompany,
+      sponsorType: row.sponsorType,
+      customMessage: row.customMessage,
+      token: row.token,
+    }).catch((err) => {
+      req.log.error({ err, token: row.token }, "Invitation email delivery failed");
+    });
+  }
+
   res.json(CreateInvitationResponse.parse(serializeInvitation(row)));
 });
 
