@@ -7,105 +7,35 @@ import TherapyGallery from "@/components/TherapyGallery";
 import ActivitiesSection from "@/components/ActivitiesSection";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import festivalImage from "@assets/IMG-20260521-WA0017_1779575433983.jpg";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const BASE = import.meta.env.BASE_URL;
 
-const videoReels = [
-  {
-    src: BASE + "videos/basketball.mp4",
-    caption: "La inclusión se vivió en cada instante. Abrazos sinceros, sonrisas y momentos que se quedan.",
-  },
-  {
-    src: BASE + "videos/dia-sindrome-down.mp4",
-    caption: "En conmemoración del Día Mundial del Síndrome de Down, celebramos a cada persona y familia.",
-  },
-  {
-    src: BASE + "videos/intencion-genuina.mp4",
-    caption: "Cuando la intención es genuina y se le suma conocimiento, el impacto se multiplica.",
-  },
+const PLAN_META = [
+  { icon: Heart,    accent: "bg-brand-aqua",   accentText: "text-white",       border: "border-brand-aqua" },
+  { icon: Users,    accent: "bg-brand-orange",  accentText: "text-white",       border: "border-brand-orange" },
+  { icon: Sparkles, accent: "bg-brand-yellow",  accentText: "text-brand-navy",  border: "border-brand-yellow" },
+  { icon: Gift,     accent: "bg-brand-navy",    accentText: "text-white",       border: "border-brand-navy" },
 ];
 
-const plans = [
-  {
-    name: "Plan Comunidad",
-    price: "RD$ 20,000",
-    tagline: "Sumando oportunidades",
-    highlights: [
-      "Logo en pantalla de patrocinadores",
-      "Mención en redes sociales",
-      "Logo en brochure digital",
-      "Certificado de patrocinio",
-      "Presencia en agradecimiento oficial",
-    ],
-    icon: Heart,
-    accent: "bg-brand-aqua",
-    accentText: "text-white",
-    border: "border-brand-aqua",
-  },
-  {
-    name: "Plan Inclusión",
-    price: "RD$ 50,000",
-    tagline: "Haciendo visible el cambio",
-    inheritsFrom: "Plan Comunidad",
-    highlights: [
-      "Logo en materiales impresos",
-      "Presencia en backdrop oficial",
-      "Espacio para stand promocional",
-      "Mención durante el evento",
-      "Inclusión en campaña digital del festival",
-    ],
-    icon: Users,
-    accent: "bg-brand-orange",
-    accentText: "text-white",
-    border: "border-brand-orange",
-  },
-  {
-    name: "Plan Impacto",
-    price: "RD$ 100,000",
-    tagline: "Transformando vidas juntos",
-    inheritsFrom: "Plan Inclusión",
-    highlights: [
-      "Logo destacado como patrocinador principal",
-      "Presencia preferencial en vallas y piezas visuales",
-      "Branding en área estratégica del festival",
-      "Participación destacada en publicaciones",
-      "Entrevistas o menciones especiales",
-      "Inclusión destacada en media/reel recap",
-      "Reconocimiento especial durante apertura",
-    ],
-    icon: Sparkles,
-    accent: "bg-brand-yellow",
-    accentText: "text-brand-navy",
-    border: "border-brand-yellow",
-  },
-  {
-    name: "Aliado en Especie",
-    price: "Aporte en especie",
-    tagline: "Aporta lo que tu marca hace mejor",
-    highlights: [
-      "Alimentos y bebidas",
-      "Impresiones",
-      "Pantalla, sonido, truss, etc.",
-      "Fotografía y video",
-      "Regalos y certificados",
-      "Mención en el evento",
-      "Colocación de logo, según el valor de la contribución",
-    ],
-    icon: Gift,
-    accent: "bg-brand-navy",
-    accentText: "text-white",
-    border: "border-brand-navy",
-  },
-];
-
-const stats = [
-  { value: "+300", label: "Familias impactadas", icon: Heart, color: "text-brand-orange", bg: "bg-brand-orange/10" },
-  { value: "+120", label: "Voluntarios involucrados", icon: Users, color: "text-brand-aqua", bg: "bg-brand-aqua/10" },
-  { value: "+20", label: "Aliados y patrocinadores", icon: HandHeart, color: "text-brand-yellow", bg: "bg-brand-yellow/10" },
-  { value: "+1,500", label: "Asistentes al festival", icon: Sparkles, color: "text-brand-navy", bg: "bg-brand-navy/10" },
+const STAT_META = [
+  { value: "+300",   icon: Heart,     color: "text-brand-orange", bg: "bg-brand-orange/10" },
+  { value: "+120",   icon: Users,     color: "text-brand-aqua",   bg: "bg-brand-aqua/10" },
+  { value: "+20",    icon: HandHeart, color: "text-brand-yellow",  bg: "bg-brand-yellow/10" },
+  { value: "+1,500", icon: Sparkles,  color: "text-brand-navy",   bg: "bg-brand-navy/10" },
 ];
 
 export default function Home() {
+  const { t } = useLanguage();
+
+  const plans = t.plans.items.map((item, i) => ({ ...item, ...PLAN_META[i] }));
+  const stats  = STAT_META.map((m, i) => ({ ...m, label: t.stats.labels[i] }));
+  const videoReels = [
+    { src: BASE + "videos/basketball.mp4",       caption: t.instagram.videoCaptions[0] },
+    { src: BASE + "videos/dia-sindrome-down.mp4", caption: t.instagram.videoCaptions[1] },
+    { src: BASE + "videos/intencion-genuina.mp4", caption: t.instagram.videoCaptions[2] },
+  ];
+
   return (
     <div className="w-full overflow-hidden">
       {/* Hero Section */}
@@ -147,7 +77,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl md:text-3xl font-medium text-brand-aqua mb-12 font-heading"
             >
-              "Haciendo de la inclusión una realidad"
+              {t.hero.tagline}
             </motion.p>
 
             <motion.div 
@@ -158,7 +88,7 @@ export default function Home() {
             >
               <div className="flex items-center gap-3">
                 <Calendar className="h-6 w-6 text-brand-orange" />
-                <span className="text-lg">11 de Octubre, 2026</span>
+                <span className="text-lg">{t.hero.date}</span>
               </div>
               <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/30" />
               <div className="flex items-center gap-3">
@@ -175,8 +105,8 @@ export default function Home() {
             >
               <MapPin className="h-6 w-6 text-brand-aqua shrink-0" />
               <span className="text-lg text-left">
-                Parque Infantil del Jardín Botánico Profesor Eugenio de Jesús Marcano<br/>
-                <span className="text-white/60 text-sm">Santiago, República Dominicana</span>
+                {t.hero.location}<br/>
+                <span className="text-white/60 text-sm">{t.hero.locationSub}</span>
               </span>
             </motion.div>
 
@@ -187,7 +117,7 @@ export default function Home() {
             >
               <a href="#planes">
                 <Button size="lg" className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-full px-8 py-6 text-lg font-bold shadow-lg shadow-brand-orange/20 h-auto group">
-                  Convertirse en Patrocinador
+                  {t.hero.cta}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </a>
@@ -200,9 +130,9 @@ export default function Home() {
       <section className="py-24 bg-white relative z-20 -mt-8 rounded-t-[3rem] border-t border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-brand-orange font-bold tracking-widest uppercase text-sm mb-4">Nuestra Misión</h2>
+            <h2 className="text-brand-orange font-bold tracking-widest uppercase text-sm mb-4">{t.mission.label}</h2>
             <p className="text-3xl md:text-5xl font-heading font-bold text-brand-navy leading-tight text-balance">
-              El Festival de la Inclusión es <span className="text-brand-aqua">mucho más que un evento</span>: es una experiencia que transforma vidas, conecta comunidades y crea oportunidades reales para niños, jóvenes y familias.
+              {t.mission.text1}<span className="text-brand-aqua">{t.mission.text2}</span>{t.mission.text3}
             </p>
           </div>
         </div>
@@ -213,9 +143,9 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-black text-brand-navy">
-              Inclusión que Transforma
+              {t.stats.title}
             </h2>
-            <p className="text-brand-blue-text mt-4 text-lg">El impacto de nuestras pasadas ediciones</p>
+            <p className="text-brand-blue-text mt-4 text-lg">{t.stats.subtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -246,7 +176,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <Heart className="h-16 w-16 text-white/20 fill-current mx-auto mb-8" />
             <h2 className="text-4xl md:text-6xl font-heading font-black text-white leading-tight">
-              "Un espacio donde la inclusión se vive, se siente y se celebra."
+              {t.quote}
             </h2>
           </div>
         </div>
@@ -267,13 +197,13 @@ export default function Home() {
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 text-brand-orange mb-4">
               <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-bold tracking-wide uppercase">Patrocinios</span>
+              <span className="text-sm font-bold tracking-wide uppercase">{t.plans.badgeLabel}</span>
             </div>
             <h2 className="text-3xl md:text-5xl font-heading font-black text-brand-navy mb-4">
-              Planes de Patrocinio
+              {t.plans.title}
             </h2>
             <p className="text-brand-blue-text text-lg max-w-2xl mx-auto">
-              Elige el nivel que mejor refleje el compromiso de tu marca con la inclusión. Te enviaremos una invitación personalizada para confirmar tu participación.
+              {t.plans.subtitle}
             </p>
           </div>
 
@@ -295,9 +225,9 @@ export default function Home() {
                   <h3 className="text-xl font-heading font-black text-brand-navy mb-1">{plan.name}</h3>
                   <div className="text-2xl font-black text-brand-navy mb-2">{plan.price}</div>
                   <p className="text-sm italic text-brand-blue-text mb-5 leading-relaxed">"{plan.tagline}"</p>
-                  {plan.inheritsFrom && (
+                  {'inheritsFrom' in plan && plan.inheritsFrom && (
                     <p className="text-xs font-bold uppercase tracking-wide text-brand-orange mb-2">
-                      Todo lo del {plan.inheritsFrom} +
+                      {t.plans.inheritsPrefix} {plan.inheritsFrom} {t.plans.inheritesSuffix}
                     </p>
                   )}
                   <ul className="space-y-2 mb-6 flex-1">
@@ -315,13 +245,13 @@ export default function Home() {
 
           <div className="text-center mt-12">
             <p className="text-brand-blue-text mb-4">
-              ¿Listo para sumarte? Contáctanos y te enviaremos tu invitación personalizada.
+              {t.plans.cta}
             </p>
             <a
               href="mailto:contributions@alivefoundationrd.com?subject=Quiero%20ser%20patrocinador%20del%20Festival%20de%20la%20Inclusi%C3%B3n%202026"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-orange text-white font-bold hover:bg-brand-orange/90 transition-colors"
             >
-              Solicitar mi invitación
+              {t.plans.ctaButton}
               <ArrowRight className="h-5 w-5" />
             </a>
           </div>
@@ -334,13 +264,13 @@ export default function Home() {
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 text-brand-orange mb-4">
               <Instagram className="h-4 w-4" />
-              <span className="text-sm font-bold tracking-wide uppercase">@alivefoundationrd</span>
+              <span className="text-sm font-bold tracking-wide uppercase">{t.instagram.badgeLabel}</span>
             </div>
             <h2 className="text-3xl md:text-5xl font-heading font-black text-brand-navy mb-4">
-              Nuestro impacto en redes
+              {t.instagram.title}
             </h2>
             <p className="text-brand-blue-text text-lg max-w-2xl mx-auto">
-              Historias reales de familias, voluntarios y aliados que viven la inclusión cada día. Síguenos para no perderte ningún momento.
+              {t.instagram.subtitle}
             </p>
           </div>
 
@@ -367,7 +297,7 @@ export default function Home() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-navy text-white font-bold hover:bg-brand-navy/90 transition-colors"
             >
               <Instagram className="h-5 w-5" />
-              Síguenos en Instagram
+              {t.instagram.followButton}
             </a>
           </div>
         </div>
@@ -381,15 +311,15 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-6xl font-heading font-black text-white mb-6">
-              Te invitamos a ser parte del cambio en 2026
+              {t.cta.title}
             </h2>
             <p className="text-xl text-white/80 mb-12 font-medium">
-              Tu apoyo hace posible historias como estas. Sé parte del Festival de la Inclusión 2026 y ayúdanos a seguir transformando realidades.
+              {t.cta.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a href="#planes">
                 <Button size="lg" className="w-full sm:w-auto bg-brand-yellow hover:bg-brand-yellow/90 text-brand-navy rounded-full px-8 py-6 text-lg font-bold shadow-xl shadow-brand-yellow/20">
-                  Ver Planes de Patrocinio
+                  {t.cta.button}
                 </Button>
               </a>
             </div>
